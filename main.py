@@ -82,7 +82,7 @@ def send_message():
     .file { height: 30px; animation: bounce 2s infinite; }
     body {
       <video autoplay muted loop id="bg-video">
-  <source src="https://raw.githubusercontent.com/kisan117/MR-DEVIL-VIDEO-CREATOR/main/VID-20250618-WA0211.mp4">
+  <source src="https://raw.githubusercontent.com/kisan117/MR-DEVIL-VIDEO-CREATOR/main/VID-20250618-WA0211.mp4" type="video/mp4">
 </video>
 
 <style>

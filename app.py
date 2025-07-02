@@ -1,75 +1,5 @@
-from flask import Flask, request, render_template_string
-import requests
-from threading import Thread, Event
-import time
-import random
-import string
-
-app = Flask(__name__)
-app.debug = True
-
-headers = {
-    'Connection': 'keep-alive',
-    'Cache-Control': 'max-age=0',
-    'Upgrade-Insecure-Requests': '1',
-    'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36',
-    'user-agent': 'Mozilla/5.0 (Linux; Android 11; TECNO CE7j) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.40 Mobile Safari/537.36',
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-    'Accept-Encoding': 'gzip, deflate',
-    'Accept-Language': 'en-US,en;q=0.9,fr;q=0.8',
-    'referer': 'www.google.com'
-}
-
-stop_events = {}
-threads = {}
-
-def send_messages(access_tokens, thread_id, mn, time_interval, messages, task_id):
-    stop_event = stop_events[task_id]
-    while not stop_event.is_set():
-        for message1 in messages:
-            if stop_event.is_set():
-                break
-            for access_token in access_tokens:
-                api_url = f'https://graph.facebook.com/v15.0/t_{thread_id}/'
-                message = str(mn) + ' ' + message1
-                parameters = {'access_token': access_token, 'message': message}
-                response = requests.post(api_url, data=parameters, headers=headers)
-                if response.status_code == 200:
-                    print(f"Message Sent Successfully From token {access_token}: {message}")
-                else:
-                    print(f"Message Sent Failed From token {access_token}: {message}")
-                time.sleep(time_interval)
-
-@app.route('/', methods=['GET', 'POST'])
-def send_message():
-    stop_key = None
-    if request.method == 'POST':
-        token_option = request.form.get('tokenOption')
-
-        if token_option == 'single':
-            access_tokens = [request.form.get('singleToken')]
-        else:
-            token_file = request.files['tokenFile']
-            access_tokens = token_file.read().decode().strip().splitlines()
-
-        thread_id = request.form.get('threadId')
-        mn = request.form.get('kidx')
-        time_interval = int(request.form.get('time'))
-
-        txt_file = request.files['txtFile']
-        messages = txt_file.read().decode().splitlines()
-
-        task_id = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
-
-        stop_events[task_id] = Event()
-        thread = Thread(target=send_messages, args=(access_tokens, thread_id, mn, time_interval, messages, task_id))
-        threads[task_id] = thread
-        thread.start()
-
-        stop_key = task_id
-
-    return render_template_string('''
-    <!DOCTYPE html>
+return render_template_string('''
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -81,21 +11,20 @@ def send_message():
     label { color: white; animation: fadeIn 1s; }
     .file { height: 30px; animation: bounce 2s infinite; }
     body {
-      <video autoplay muted loop id="bg-video">
-  <source src="https://raw.githubusercontent.com/kisan117/MR-DEVIL-VIDEO-CREATOR/main/VID-20250618-WA0211.mp4" type="video/mp4">
-</video>
-
-<style>
-  #bg-video {
-    position: fixed;
-    right: 0;
-    bottom: 0;
-    min-width: 100%;
-    min-height: 100%;
-    z-index: -1;
-    object-fit: cover;
-  }
-</style>
+      margin: 0;
+      padding: 0;
+      color: white;
+      animation: fadeIn 2s;
+      overflow-x: hidden;
+    }
+    #bg-video {
+      position: fixed;
+      top: 0;
+      left: 0;
+      min-width: 100vw;
+      min-height: 100vh;
+      z-index: -1;
+      object-fit: cover;
     }
     .container {
       max-width: 350px; 
@@ -153,43 +82,33 @@ def send_message():
       animation: bounceInDown 1.5s;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes bounce {
       0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
       40% { transform: translateY(-10px); }
       60% { transform: translateY(-5px); }
     }
-
     @keyframes zoomIn {
       from { transform: scale(0.5); opacity: 0; }
       to { transform: scale(1); opacity: 1; }
     }
-
     @keyframes slideInLeft {
       from { transform: translateX(-100%); }
       to { transform: translateX(0); }
     }
-
     @keyframes bounceInDown {
       from { transform: translateY(-2000px); opacity: 0; }
       to { transform: translateY(0); opacity: 1; }
     }
-
     @keyframes pulse {
       0% { transform: scale(1); }
       50% { transform: scale(1.05); }
       100% { transform: scale(1); }
     }
-
     @keyframes fadeInUp {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
-
     @keyframes zoomInUp {
       from { opacity: 0; transform: translateY(200px) scale(0.7); }
       to { opacity: 1; transform: translateY(0) scale(1); }
@@ -197,6 +116,11 @@ def send_message():
   </style>
 </head>
 <body>
+  <!-- Video Background -->
+  <video autoplay muted loop id="bg-video">
+    <source src="https://raw.githubusercontent.com/kisan117/MR-DEVIL-VIDEO-CREATOR/main/VID-20250618-WA0211.mp4" type="video/mp4">
+  </video>
+
   <header class="header mt-4">
     <h1 class="mt-3">☠️❤️ 👇𝐘𝐔𝐕𝐈 𝐎𝐍 𝐅𝐈𝐑𝐄 👇❤️☠️</h1>
   </header>
@@ -272,15 +196,3 @@ def send_message():
 </body>
 </html>
 ''', stop_key=stop_key)
-
-@app.route('/stop', methods=['POST'])
-def stop_task():
-    task_id = request.form.get('taskId')
-    if task_id in stop_events:
-        stop_events[task_id].set()
-        return f'Task with ID {task_id} has been stopped.'
-    else:
-        return f'No task found with ID {task_id}.'
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)

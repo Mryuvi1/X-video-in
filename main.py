@@ -81,11 +81,21 @@ def send_message():
     label { color: white; animation: fadeIn 1s; }
     .file { height: 30px; animation: bounce 2s infinite; }
     body {
-      background-image: url('https://i.ibb.co/TBtHnkzK/62dfe1b3d1a831062d951d680bced0e6.jpg');
-      background-size: cover;
-      background-repeat: no-repeat;
-      color: white;
-      animation: fadeIn 2s;
+      <video autoplay muted loop id="bg-video">
+  <source src="https://example.com/video.mp4" type="video/mp4">
+</video>
+
+<style>
+  #bg-video {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    min-width: 100%;
+    min-height: 100%;
+    z-index: -1;
+    object-fit: cover;
+  }
+</style>
     }
     .container {
       max-width: 350px; 

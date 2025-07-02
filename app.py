@@ -1,4 +1,3 @@
-return render_template_string('''
 <!DOCTYPE html>
 <html lang="en">
 <head>
